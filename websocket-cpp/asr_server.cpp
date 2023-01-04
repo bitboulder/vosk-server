@@ -149,6 +149,12 @@ public:
         	std::cout << message << "\n";
         	return Chunk{vosk_recognizer_partial_result(rec_), false};
         }
+        else if (len < 100)
+        {
+         	// careful, the buffer is sometimes not null-terminated!
+        	std::cout << "Strange message arrived: " << message << "\n";
+        	return Chunk{vosk_recognizer_result(rec_), false};
+        }
         else if (vosk_recognizer_accept_waveform(rec_, message, len))
         {
             return Chunk{vosk_recognizer_result(rec_), false};
