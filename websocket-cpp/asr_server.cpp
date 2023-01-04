@@ -137,7 +137,8 @@ public:
 
     Chunk process_chunk(const char *message, int len)
     {
-        if (strcmp(message, "{\"eof\" : 1}") == 0)
+    	// buffer not always NULL terminated? so restrict comparison range
+        if (strncmp(message, "{\"eof\" : 1}", 11) == 0)
         {
             return Chunk{vosk_recognizer_final_result(rec_), true};
         }
