@@ -140,6 +140,7 @@ public:
     	// buffer not always NULL terminated? so restrict comparison range
         if (strncmp(message, "{\"eof\" : 1}", 11) == 0)
         {
+        	std::cout << "Received EOF on recognizer session!" << std::endl;
             return Chunk{vosk_recognizer_final_result(rec_), true};
         }
         // dirty hack, clients send their sampling rate this way, but
