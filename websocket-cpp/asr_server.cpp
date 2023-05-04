@@ -138,24 +138,27 @@ public:
     Chunk process_chunk(const char *message, int len)
     {
     	// buffer not always NULL terminated? so restrict comparison range
-        if (strncmp(message, "{\"eof\" : 1}", 11) == 0)
-        {
-        	std::cout << "Received EOF on recognizer session!" << std::endl;
-            return Chunk{vosk_recognizer_final_result(rec_), true};
-        }
-        // dirty hack, clients send their sampling rate this way, but
-        // this is not mapped to an API in Vosk, so filter it out here
-        else if ((len < 100) && (strstr(message, "sample_rate") != NULL))
-        {
-        	// careful, the buffer is sometimes not null-terminated!
-        	std::cout << message << "\n";
-        	return Chunk{vosk_recognizer_partial_result(rec_), false};
-        }
-        else if (len < 100)
-        {
-         	// careful, the buffer is sometimes not null-terminated!
-        	std::cout << "Strange message arrived: " << message << "\n";
-        	return Chunk{vosk_recognizer_result(rec_), false};
+    	if (len < 100)
+    	{
+    		if (strncmp(message, "{\"eof\" : 1}", 11) == 0)
+    		{
+    			std::cout << "msglen=" << len << ", received EOF on recognizer session!" << std::endl;
+    			return Chunk{vosk_recognizer_final_result(rec_), true};
+    		}
+    		// dirty hack, clients send their sampling rate this way, but
+    		// this is not mapped to an API in Vosk, so filter it out here
+        	else if ((len < 100) && (strstr(message, "sample_rate") != NULL))
+        	{
+        		// careful, the buffer is sometimes not null-terminated!
+        		std::cout << "msglen=" << len << "msg=" << message << "\n";
+        		return Chunk{vosk_recognizer_partial_result(rec_), false};
+        	}
+        	else
+        	{
+        		// careful, the buffer is sometimes not null-terminated!
+        		std::cout << "Strange message arrived: " << message << "\n";
+        		return Chunk{vosk_recognizer_result(rec_), false};
+        	}
         }
         else if (vosk_recognizer_accept_waveform(rec_, message, len))
         {
