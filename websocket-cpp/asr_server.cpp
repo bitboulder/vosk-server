@@ -152,6 +152,7 @@ public:
         else if ((len < 100) && (strstr(buf, "sample_rate") != NULL))
         {
         	std::cout << buf << "\n";
+                // TODO: sample rate is ignored
         	return Chunk{vosk_recognizer_partial_result(rec_), false};
         }
         else if (len < 100)
